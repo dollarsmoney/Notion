@@ -1,0 +1,8 @@
+# Every PR needs a review from the owning team.
+# Replace with your real GitHub team or usernames.
+*                       @dollarsmoney
+
+/backend/               @dollarsmoney
+/frontend/              @dollarsmoney
+/.github/               @dollarsmoney
+/backend/supabase/      @dollarsmoney

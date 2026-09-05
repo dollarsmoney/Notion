@@ -1,0 +1,47 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      target: runner
+    image: marketplace-backend:local
+    ports:
+      - '4000:4000'
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      PAYSTACK_SECRET_KEY: ${PAYSTACK_SECRET_KEY}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      CURRENCY: ${CURRENCY:-NGN}
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:4000/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      target: runner
+    image: marketplace-frontend:local
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+      NEXT_PUBLIC_SUPABASE_URL: ${SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
