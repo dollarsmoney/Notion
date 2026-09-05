@@ -287,8 +287,8 @@ Set these in **Settings → Secrets and variables → Actions**:
 
 | Name | Type | Purpose |
 | --- | --- | --- |
-| `INFRA_REPO_TOKEN` | secret | Fine-grained PAT with `contents: write` on the infrastructure repo |
-| `INFRA_REPOSITORY` | variable | e.g. `dollarsmoney/InfraRepo` |
+| `INFRA_CI_TOKEN` | secret | Fine-grained PAT with `contents: write` on the infrastructure repo. Required — the `bump-infra` job cannot check that repo out without it. |
+| `INFRA_REPOSITORY` | variable | Optional. Defaults to `dollarsmoney/InfraRepo`; set it only to point at a different infrastructure repo. |
 
 `GITHUB_TOKEN` is provided automatically and is what pushes to GHCR.
 

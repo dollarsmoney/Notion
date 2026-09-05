@@ -115,8 +115,8 @@ jobs:
       - name: Checkout infrastructure repo
         uses: actions/checkout@v4
         with:
-          repository: ${{ vars.INFRA_REPOSITORY }}
-          token: ${{ secrets.INFRA_REPO_TOKEN }}
+          repository: ${{ vars.INFRA_REPOSITORY || 'dollarsmoney/InfraRepo' }}
+          token: ${{ secrets.INFRA_CI_TOKEN }}
           path: infra
 
       - name: Write the new image tag
