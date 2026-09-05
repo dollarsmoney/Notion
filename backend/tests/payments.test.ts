@@ -81,7 +81,9 @@ describe('finalizePayment', () => {
     expect(orderUpdates).toContainEqual({ status: 'failed' });
   });
 
-  it('records an abandoned checkout without crediting the order', async () => {
+  // An abandoned checkout link stays live, so the order must remain pending
+  // rather than being closed out as failed.
+  it('leaves the order pending when the checkout was abandoned', async () => {
     mockDb(pendingPayment);
     vi.mocked(verifyTransaction).mockResolvedValue({
       status: 'abandoned',
@@ -96,6 +98,25 @@ describe('finalizePayment', () => {
 
     expect(result.status).toBe('abandoned');
     expect(supabaseAdmin.rpc).not.toHaveBeenCalled();
+    expect(orderUpdates).not.toContainEqual({ status: 'failed' });
+  });
+
+  // The buyer retried on the same reference and it went through.
+  it('settles an order that had already been marked failed', async () => {
+    mockDb({ ...pendingPayment, status: 'failed' }, 'failed');
+    vi.mocked(verifyTransaction).mockResolvedValue({
+      status: 'success',
+      amount: 500000,
+      currency: 'NGN',
+      reference: REFERENCE,
+      gateway_response: 'Successful',
+      paid_at: '2026-01-02T00:00:00Z',
+    } as never);
+
+    const result = await finalizePayment(REFERENCE);
+
+    expect(result.status).toBe('success');
+    expect(supabaseAdmin.rpc).toHaveBeenCalledWith('mark_order_paid', { p_order_id: ORDER_ID });
   });
 
   it('rejects a successful charge whose amount does not match the order total', async () => {

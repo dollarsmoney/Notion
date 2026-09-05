@@ -83,14 +83,12 @@ marketplace/
 
 ### 1. Supabase
 
-Create a project at [supabase.com](https://supabase.com), then run the two
+Create a project at [supabase.com](https://supabase.com), then run the
 migrations in order from the SQL editor:
 
-1. `backend/supabase/migrations/0001_init.sql`
-2. `backend/supabase/migrations/0002_storage.sql`
-
-The first creates the schema, triggers and Row Level Security policies. The
-second creates the public `product-images` bucket and its access policies.
+1. `backend/supabase/migrations/0001_init.sql` — schema, triggers, RLS policies
+2. `backend/supabase/migrations/0002_storage.sql` — public `product-images` bucket and its policies
+3. `backend/supabase/migrations/0003_settle_late_payments.sql` — lets a late Paystack success settle an order that was already recorded as failed
 
 Then, under **Authentication → Providers**, ensure Email is enabled. For local
 development it is convenient to turn **Confirm email** off so sign-ups log in
@@ -143,12 +141,18 @@ With Docker:
 docker compose up --build
 ```
 
-Or directly:
+Or directly — run each from its own workspace directory, since the backend reads
+`.env` relative to the working directory:
 
 ```bash
 cd backend  && npm ci && npm run dev    # http://localhost:4000
 cd frontend && npm ci && npm run dev    # http://localhost:3000
 ```
+
+`npm run dev` and `npm start` load `backend/.env` through Node's
+`--env-file-if-exists` flag. In Docker and Kubernetes there is no `.env` file, so
+the flag does nothing and the container's environment is used instead. The
+backend refuses to start if a required variable is missing, and names which one.
 
 Register one account as a **vendor** and another as a **user**, create an active
 listing with stock, then buy it with a

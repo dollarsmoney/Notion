@@ -140,7 +140,16 @@ export async function finalizePayment(reference: string): Promise<FinalizeResult
       gateway_response: tx.gateway_response,
       raw_response: tx,
     });
-    await supabaseAdmin.from('orders').update({ status: 'failed' }).eq('id', payment.order_id).eq('status', 'pending');
+    // An abandoned checkout is not resolved: the link stays live and the buyer
+    // may still pay, so the order stays pending. A declined attempt is recorded
+    // as failed, which mark_order_paid can still settle if a retry succeeds.
+    if (status === 'failed') {
+      await supabaseAdmin
+        .from('orders')
+        .update({ status: 'failed' })
+        .eq('id', payment.order_id)
+        .eq('status', 'pending');
+    }
     return { status, order: await loadOrder(), message: tx.gateway_response ?? 'Payment not successful' };
   }
 
