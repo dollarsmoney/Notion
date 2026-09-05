@@ -39,10 +39,13 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="mx-auto max-w-sm space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
+    <div className="mx-auto max-w-sm space-y-6 py-6">
+      <div className="text-center">
+        <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
+        <p className="mt-1 text-sm text-slate-500">Buy from vendors, or start selling yourself.</p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="card space-y-4 p-5">
+      <form onSubmit={handleSubmit} className="card space-y-4 p-6">
         {error && <Alert>{error}</Alert>}
         {notice && <Alert kind="success">{notice}</Alert>}
 
@@ -67,6 +70,7 @@ export default function RegisterPage() {
             type="email"
             required
             autoComplete="email"
+            placeholder="you@example.com"
             className="field"
             value={form.email}
             onChange={(e) => update('email', e.target.value)}

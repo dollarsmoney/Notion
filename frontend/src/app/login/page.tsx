@@ -4,7 +4,7 @@ import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
-import { Alert } from '@/components/ui';
+import { Alert, Spinner } from '@/components/ui';
 
 function LoginForm() {
   const { signIn } = useAuth();
@@ -30,10 +30,13 @@ function LoginForm() {
   }
 
   return (
-    <div className="mx-auto max-w-sm space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Log in</h1>
+    <div className="mx-auto max-w-sm space-y-6 py-6">
+      <div className="text-center">
+        <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+        <p className="mt-1 text-sm text-slate-500">Log in to buy or manage your listings.</p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="card space-y-4 p-5">
+      <form onSubmit={handleSubmit} className="card space-y-4 p-6">
         {error && <Alert>{error}</Alert>}
         <div>
           <label className="label" htmlFor="email">
@@ -44,6 +47,7 @@ function LoginForm() {
             type="email"
             required
             autoComplete="email"
+            placeholder="you@example.com"
             className="field"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -80,7 +84,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<Spinner />}>
       <LoginForm />
     </Suspense>
   );
